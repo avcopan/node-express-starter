@@ -1,5 +1,6 @@
 const express = require("express");
 const users = require("../data/users.js");
+const { getUserHandler } = require("./get-users.js");
 
 // routers are like app, but you can have multiple
 const userRouter = express.Router();
@@ -8,11 +9,7 @@ userRouter.get("/", (req, res) => {
   res.status(200).send(users);
 });
 
-userRouter.get("/:userIndex", (req, res) => {
-  let userIndex = req.params.userIndex;
-  console.log("Sending user:", users[userIndex]);
-  res.status(200).send(users[userIndex]);
-});
+userRouter.get("/:userIndex", getUserHandler );
 
 userRouter.post("/", (req, res) => {
   users.push(req.body);
