@@ -27,6 +27,24 @@ app.get("/songs", (req, res) => {
     });
 });
 
+app.post('/songs', (req, res) => {
+  let song = req.body;
+
+  let query = `
+    INSERT INTO "songs" ("rank", "artist", "track", "published")
+    VALUES ('${song.rank}', '${song.artist}', '${song.track}', '${song.published}');
+  `
+
+  pool.query(query)
+    .then(() => {
+      res.sendStatus(201);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.sendStatus(500);
+    })
+});
+
 app.listen(PORT, () => {
   console.log("App is listening on port", PORT);
 });
