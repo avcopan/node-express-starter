@@ -1,25 +1,17 @@
 const express = require("express");
-const pg = require("pg");
+const db = require('./db.js');
 
 const PORT = process.env.PORT || 8000;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 const app = express();
-const pool = new pg.Pool({
-  host: "db.bit.io",
-  port: 5432,
-  ssl: true,
-  database: "avcopan/trial",
-  user: "songs",
-  password: DB_PASSWORD,
-});
 
 app.use(express.static("server/public/"));
 app.use(express.json());
 
 app.get("/songs", (req, res) => {
-  pool.query('SELECT * FROM "songs"')
-    .then((result) => {
-      res.status(200).send(result.rows);
+  db.getAllSongs()
+    .then((songs) => {
+      res.status(200).send(songs);
     })
     .catch((error) => {
       console.error(error);
@@ -28,14 +20,7 @@ app.get("/songs", (req, res) => {
 });
 
 app.post('/songs', (req, res) => {
-  let song = req.body;
-
-  let query = `
-    INSERT INTO "songs" ("rank", "artist", "track", "published")
-    VALUES ('${song.rank}', '${song.artist}', '${song.track}', '${song.published}');
-  `
-
-  pool.query(query)
+  db.addSong(req.body)
     .then(() => {
       res.sendStatus(201);
     })
